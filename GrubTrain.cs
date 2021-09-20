@@ -48,7 +48,7 @@ namespace GrubTrain
             gc.Animations.Add(State.Turn,"Cry Turn");
             gc.Animations.Add(State.Teleport,"Idle");
             // extract audios
-            var pfsm = grub.GetComponent<PlayMakerFSM>();
+            var pfsm = grubPrefab.GetComponent<PlayMakerFSM>();
             if(pfsm != null){
                 gc.teleport = pfsm.GetAction<AudioPlayRandom>("Hero Close",1).audioClips[0];
                 gc.yay = pfsm.GetAction<AudioPlayRandom>("Leave",0).audioClips[0];
