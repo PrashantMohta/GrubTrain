@@ -16,7 +16,7 @@ using static Satchel.EnemyUtils;
 
 namespace GrubTrain
 {
-    public class GrubTrain : Mod
+    public class GrubTrain : Mod , ICustomMenuMod,IGlobalSettings<ModSettings>
     {
 
         internal static GrubTrain Instance;
@@ -25,16 +25,22 @@ namespace GrubTrain
         
         public override string GetVersion()
         {
-            return "0.1";
+            return "0.2";
         }
 
+        public static ModSettings settings { get; set; } = new ModSettings();
+        public void OnLoadGlobal(ModSettings s) => settings = s;
+        public ModSettings OnSaveGlobal() => settings;
+        public bool ToggleButtonInsideMenu => false;
 
+        public int neededGrubCount = 0;
         public GameObject createGrubCompanion(GameObject ft = null){
             var grub = grubPrefab.createCompanionFromPrefab();
+            grub.layer = settings.grubStrats ? 11 : 18;
             //add control and adjust parameters
             var gc = grub.GetAddComponent<CompanionControl>();
-            gc.moveSpeed = 13f;
-            gc.followDistance = 3f;
+            gc.moveSpeed = settings.moveSpeed;
+            gc.followDistance = settings.followDistance;
             if(ft != null){
                 gc.followTarget = ft;
             }
@@ -64,6 +70,7 @@ namespace GrubTrain
             grubPrefab = preloadedObjects["Crossroads_05"]["Grub Bottle/Grub"];
             UnityEngine.Object.DontDestroyOnLoad(grubPrefab);
             ModHooks.HeroUpdateHook += update;
+            GameManager.instance.StartCoroutine(updateGrubCount());
         }
        
         public override List<(string, string)> GetPreloadNames()
@@ -76,20 +83,47 @@ namespace GrubTrain
 
         
         public void createTrain(){
-            if(grubs.Count > 3){ return; }
+            if(grubs.Count >= neededGrubCount){ return; }
             GameObject grub;
             if(grubs.Count==0){
                 grub = createGrubCompanion();
             } else {
-                grub = createGrubCompanion(grubs[grubs.Count-1]);
+                var followTarget = grubs[grubs.Count-1];
+                if(settings.grubGathererMode && UnityEngine.Random.Range(0.0f, 1.0f) < 0.5f && grubs.Count > 4){
+                    followTarget = grubs[3];    
+                    if(UnityEngine.Random.Range(0.0f, 1.0f) < 0.1f){
+                        followTarget = grubs[2];
+                    }
+                }
+                grub = createGrubCompanion(followTarget);
             }
             grubs.Add(grub);
+        }
+
+        public IEnumerator updateGrubCount(){
+            yield return new WaitWhile(()=> PlayerData.instance == null );
+            while(true){
+                yield return new WaitForSeconds(2f);
+                neededGrubCount = settings.grubBaseCount;
+                if(settings.grubGathererMode){
+                    // for each freed grub add more grubs
+                    var rescuedGrubs = PlayerData.instance.GetVariable<List<string>>("scenesGrubRescued");
+                    if(rescuedGrubs != null){
+                        neededGrubCount += rescuedGrubs.Count;
+                    }
+                }
+            }
         }
         public void update()
         {
             createTrain();
         }
 
+        public MenuScreen GetMenuScreen(MenuScreen modListMenu, ModToggleDelegates? toggleDelegates)
+        {
+            Menu.saveModsMenuScreen(modListMenu);
+            return Menu.CreatemenuScreen();
+        }
     }
 
 }

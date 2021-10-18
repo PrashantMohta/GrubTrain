@@ -41,7 +41,7 @@ namespace GrubTrain
         public AudioClip teleport,walk,yay;
         public Dictionary<State,string> Animations = new Dictionary<State,string>();
 
-        public float followClipChance = 0.03f, teleportClipChance =  0.60f,turnClipChance = 30f, yayClipChance = 0.01f;
+        public float followClipChance = 0.03f, teleportClipChance =  0.60f,turnClipChance = 0.30f, yayClipChance = 0.01f;
         private State state = State.Idle;
         private Direction lookDirection = Direction.Left;
 
@@ -63,10 +63,7 @@ namespace GrubTrain
 
             rb.bodyType = RigidbodyType2D.Dynamic;
             collider.isTrigger = false;
-            gameObject.layer = 11;
             gameObject.SetScale(scale,scale);
-
-
             StartCoroutine(MainLoop());
         }
 
@@ -111,12 +108,16 @@ namespace GrubTrain
             //fix rotation
             gameObject.transform.rotation = Quaternion.identity;
         }
-
+        private void playSound(AudioClip sound){
+            if(GrubTrain.settings.enableSounds && (!GrubTrain.settings.reduceSounds || Random.Range(0.0f, 1.0f) < 0.30f)){
+                audioSource.PlayOneShot(sound);
+            }
+        }
         private IEnumerator TurnToHero(){
            fixRotation();
            playAnimForState();
            if(teleport != null && !audioSource.isPlaying && Random.Range(0.0f, 1.0f) < turnClipChance){
-               audioSource.PlayOneShot(teleport);
+               playSound(teleport);
            }
            yield return new WaitForSeconds(0.5f); // atleast stay here for this duration
            var ls = gameObject.transform.localScale;
@@ -146,7 +147,7 @@ namespace GrubTrain
             fixRotation();
             playAnimForState(true);
             if(yay != null && !audioSource.isPlaying && Random.Range(0.0f, 1.0f) < yayClipChance){
-                audioSource.PlayOneShot(yay);
+                playSound(yay);
             }
             rb.velocity = new Vector2(0.0f, 0.0f);
 
@@ -161,7 +162,7 @@ namespace GrubTrain
             //play Teleport animation
             fixRotation();
             if(teleport != null && !audioSource.isPlaying && Random.Range(0.0f, 1.0f) < teleportClipChance){
-                audioSource.PlayOneShot(teleport);
+                playSound(teleport);
             }
             playAnimForState();
             var deltaToPlayer = Random.Range(-0.5f, 0.5f);
@@ -180,7 +181,7 @@ namespace GrubTrain
             //play follow animation
             playAnimForState();
             if(walk != null && !audioSource.isPlaying && Random.Range(0.0f, 1.0f) < followClipChance){
-                audioSource.PlayOneShot(walk);
+                playSound(walk);
             }
 
             //get displacement to player
