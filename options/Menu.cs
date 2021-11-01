@@ -23,6 +23,7 @@ namespace GrubTrain
         }
 
         public static void BackSetting(){
+            GrubTrain.Instance.destroyTrain();
             GoToModListMenu();
         }
 
@@ -66,6 +67,25 @@ namespace GrubTrain
                         Style = HorizontalOptionStyle.VanillaStyle
                     },
                     out var grubStratsSelector
+                );  
+
+            area.AddHorizontalOption(
+                    "Cursed Strats",
+                    new HorizontalOptionConfig
+                    {
+                        Options = new string[] { "Enabled" , "Disabled"},
+                        ApplySetting = (_, i) => GrubTrain.settings.cursedStrats = (i == 0),
+                        RefreshSetting = (s, _) => s.optionList.SetOptionTo(GrubTrain.settings.cursedStrats ? 0 : 1),
+                        CancelAction = _ => { BackSetting(); },
+                        Description = new DescriptionInfo
+                        {
+                            Text = "Cursed Grub tricks",
+                            Style = DescriptionStyle.HorizOptionSingleLineVanillaStyle
+                        },
+                        Label = "Cursed Strats",
+                        Style = HorizontalOptionStyle.VanillaStyle
+                    },
+                    out var cursedStratsSelector
                 );  
 
             area.AddHorizontalOption(

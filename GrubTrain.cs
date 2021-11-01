@@ -29,7 +29,10 @@ namespace GrubTrain
         }
 
         public static ModSettings settings { get; set; } = new ModSettings();
-        public void OnLoadGlobal(ModSettings s) => settings = s;
+        public void OnLoadGlobal(ModSettings s) { 
+            destroyTrain();
+            settings = s;
+        }
         public ModSettings OnSaveGlobal() => settings;
         public bool ToggleButtonInsideMenu => false;
 
@@ -83,6 +86,7 @@ namespace GrubTrain
 
         
         public void createTrain(){
+            grubs.RemoveAll(item => item == null);
             if(grubs.Count >= neededGrubCount){ return; }
             GameObject grub;
             if(grubs.Count==0){
@@ -97,12 +101,31 @@ namespace GrubTrain
                 }
                 grub = createGrubCompanion(followTarget);
             }
+            
+            var sr = grub.GetComponent<MeshRenderer>();
+            sr.sortingOrder = grubs.Count;
+
+            if(settings.cursedStrats){
+                var grubCollider = grub.GetComponent<BoxCollider2D>();
+                var terrain = new GameObject("terrain");
+                terrain.layer = 8;
+                terrain.GetAddComponent<BoxCollider2D>().size = grubCollider.size - new Vector2(0.5f,0.5f);
+                terrain.transform.position = grub.transform.position - new Vector3(0.3f,0.5f,0f);
+                terrain.transform.SetParent(grub.transform);
+            }
             grubs.Add(grub);
         }
 
+        public void destroyTrain(){
+            foreach(var grub in grubs){
+                GameObject.Destroy(grub);
+            }
+            grubs = new List<GameObject>();
+        }
+
         public IEnumerator updateGrubCount(){
-            yield return new WaitWhile(()=> PlayerData.instance == null );
             while(true){
+                yield return new WaitWhile(()=> PlayerData.instance == null );
                 yield return new WaitForSeconds(2f);
                 neededGrubCount = settings.grubBaseCount;
                 if(settings.grubGathererMode){
