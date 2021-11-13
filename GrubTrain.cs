@@ -25,13 +25,14 @@ namespace GrubTrain
         
         public override string GetVersion()
         {
-            return "0.2";
+            return "0.3";
         }
 
         public static ModSettings settings { get; set; } = new ModSettings();
         public void OnLoadGlobal(ModSettings s) { 
             destroyTrain();
             settings = s;
+            Menu.refreshMenuOptions();
         }
         public ModSettings OnSaveGlobal() => settings;
         public bool ToggleButtonInsideMenu => false;
@@ -73,7 +74,9 @@ namespace GrubTrain
             grubPrefab = preloadedObjects["Crossroads_05"]["Grub Bottle/Grub"];
             UnityEngine.Object.DontDestroyOnLoad(grubPrefab);
             ModHooks.HeroUpdateHook += update;
+            ModHooks.AfterSavegameLoadHook += LoadSaveGame;
             GameManager.instance.StartCoroutine(updateGrubCount());
+            GameManager.instance.StartCoroutine(RefreshMenuOptions());
         }
        
         public override List<(string, string)> GetPreloadNames()
@@ -130,18 +133,24 @@ namespace GrubTrain
                 neededGrubCount = settings.grubBaseCount;
                 if(settings.grubGathererMode){
                     // for each freed grub add more grubs
-                    var rescuedGrubs = PlayerData.instance.GetVariable<List<string>>("scenesGrubRescued");
-                    if(rescuedGrubs != null){
-                        neededGrubCount += rescuedGrubs.Count;
-                    }
+                    var rescuedGrubs = PlayerData.instance.GetInt(nameof(PlayerData.grubsCollected));
+                    neededGrubCount += rescuedGrubs;
                 }
             }
+        }
+        public IEnumerator RefreshMenuOptions(){
+           yield return null;
+           yield return new WaitForSeconds(0.1f);
+           Menu.refreshMenuOptions();
         }
         public void update()
         {
             createTrain();
         }
-
+        
+        public void LoadSaveGame(SaveGameData data){
+            destroyTrain();
+        }
         public MenuScreen GetMenuScreen(MenuScreen modListMenu, ModToggleDelegates? toggleDelegates)
         {
             Menu.saveModsMenuScreen(modListMenu);

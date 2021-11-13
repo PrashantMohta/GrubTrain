@@ -39,6 +39,17 @@ namespace GrubTrain
             Application.OpenURL("https://discord.gg/rqsRHRt25h");
         }
 
+        private static MenuOptionHorizontal grubStratsSelector;
+        private static MenuOptionHorizontal cursedStratsSelector;
+        private static MenuOptionHorizontal grubGathererSelector;
+        private static MenuOptionHorizontal grubSoundsSelector;
+
+        public static void refreshMenuOptions(){
+            grubStratsSelector?.menuSetting?.RefreshValueFromGameSettings();
+            cursedStratsSelector?.menuSetting?.RefreshValueFromGameSettings();
+            grubGathererSelector?.menuSetting?.RefreshValueFromGameSettings();
+            grubSoundsSelector?.menuSetting?.RefreshValueFromGameSettings();
+        }
         private static void addMenuOptions(ContentArea area){
 
             area.AddTextPanel("HelpText",
@@ -66,7 +77,7 @@ namespace GrubTrain
                         Label = "Grub Strats",
                         Style = HorizontalOptionStyle.VanillaStyle
                     },
-                    out var grubStratsSelector
+                    out grubStratsSelector
                 );  
 
             area.AddHorizontalOption(
@@ -85,7 +96,7 @@ namespace GrubTrain
                         Label = "Cursed Strats",
                         Style = HorizontalOptionStyle.VanillaStyle
                     },
-                    out var cursedStratsSelector
+                    out cursedStratsSelector
                 );  
 
             area.AddHorizontalOption(
@@ -104,7 +115,7 @@ namespace GrubTrain
                         Label = "Grub Gatherer Mode",
                         Style = HorizontalOptionStyle.VanillaStyle
                     },
-                    out var grubGathererSelector
+                    out grubGathererSelector
                 ); 
 
 
@@ -124,7 +135,7 @@ namespace GrubTrain
                         Label = "Grub Sounds",
                         Style = HorizontalOptionStyle.VanillaStyle
                     },
-                    out var grubSoundsSelector
+                    out grubSoundsSelector
                 ); 
 
             
