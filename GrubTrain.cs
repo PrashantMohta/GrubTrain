@@ -13,16 +13,43 @@ using static Modding.Logger;
 using static Satchel.GameObjectUtils;
 using static Satchel.FsmUtil;
 using static Satchel.EnemyUtils;
+using static Satchel.SpriteUtils;
+using static Satchel.TextureUtils;
 
 namespace GrubTrain
 {
     public class GrubTrain : Mod , ICustomMenuMod,IGlobalSettings<ModSettings>
     {
 
-        internal static GrubTrain Instance;
+        public static GrubTrain Instance;
         public GameObject grubPrefab;
         public List<GameObject> grubs = new List<GameObject>();
         
+        public GrubTrain(){
+            On.MenuStyleTitle.SetTitle += MenuScreenGrubs;
+        }
+
+        private void MenuScreenGrubs(On.MenuStyleTitle.orig_SetTitle orig, MenuStyleTitle self, int index){
+             
+             var floor = new GameObject();
+             floor.layer = 8; 
+             floor.transform.position = new Vector3(0f,0.2f,-10f);
+             var boxC = floor.AddComponent<BoxCollider2D>();
+             boxC.size = new Vector2(100f,1f);
+             
+             var dummy = new GameObject();
+             dummy.transform.position = new Vector3(14.6f, 2.7f, -18.1f);
+             dummy.GetAddComponent<MouseFollow>();
+             var a = createGrubCompanion(dummy);
+             if(a != null){
+                var b = createGrubCompanion(a);
+                if(b != null){
+                    createGrubCompanion(b);
+                }
+             }
+             PrintAllActiveGameObjectsInScene();
+             orig(self, index);
+        }
         public override string GetVersion()
         {
             return "0.3";
@@ -39,6 +66,7 @@ namespace GrubTrain
 
         public int neededGrubCount = 0;
         public GameObject createGrubCompanion(GameObject ft = null){
+            if(grubPrefab == null) { return null; }
             var grub = grubPrefab.createCompanionFromPrefab();
             grub.layer = settings.grubStrats ? 11 : 18;
             //add control and adjust parameters
