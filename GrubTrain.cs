@@ -53,7 +53,7 @@ namespace GrubTrain
         }
         public override string GetVersion()
         {
-            return "0.3";
+            return "0.4";
         }
 
         public static ModSettings settings { get; set; } = new ModSettings();
