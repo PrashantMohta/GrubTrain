@@ -46,6 +46,12 @@
     <Reference Include="Assembly-CSharp">
       <HintPath>$(ModdingAPi)\Assembly-CSharp.dll</HintPath>
     </Reference>
+    <Reference Include="MMHOOK_Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
+      <HintPath>$(ModdingAPI)\MMHook_Assembly-Csharp.dll</HintPath>
+    </Reference>
+    <Reference Include="MMHOOK_PlayMaker, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
+      <HintPath>$(ModdingAPI)\MMHook_PlayMaker.dll</HintPath>
+    </Reference>
     <Reference Include="UnityEngine">
       <HintPath>$(VanillaFiles)\UnityEngine.dll</HintPath>
     </Reference>
@@ -94,6 +100,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="GrubTrain.cs" />
+    <Compile Include="MouseFollow.cs" />
     <Compile Include="CompanionControl.cs" />
     <Compile Include="options\Settings.cs" />
     <Compile Include="options\Menu.cs" />
