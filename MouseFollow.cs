@@ -15,9 +15,9 @@ public class MouseFollow : MonoBehaviour {
         mousePosition.z = 38.1f;
         mousePosition = Camera.main.ScreenToWorldPoint(mousePosition);
 
-        GrubTrain.GrubTrain.Instance.Log(Input.mousePosition);
-        GrubTrain.GrubTrain.Instance.Log(mousePosition);
+        //GrubTrain.GrubTrain.Instance.Log(Input.mousePosition);
+        //GrubTrain.GrubTrain.Instance.Log(mousePosition);
         transform.position = Vector2.Lerp(transform.position, mousePosition, moveSpeed);
-        GrubTrain.GrubTrain.Instance.Log(transform.position);
+        //GrubTrain.GrubTrain.Instance.Log(transform.position);
     }
 }

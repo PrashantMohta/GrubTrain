@@ -24,31 +24,32 @@ namespace GrubTrain
         public static GrubTrain Instance;
         public GameObject grubPrefab;
         public List<GameObject> grubs = new List<GameObject>();
+        public List<GameObject> MenuGos = new List<GameObject>();
         
         public GrubTrain(){
             On.MenuStyleTitle.SetTitle += MenuScreenGrubs;
         }
 
         private void MenuScreenGrubs(On.MenuStyleTitle.orig_SetTitle orig, MenuStyleTitle self, int index){
-             
-             var floor = new GameObject();
-             floor.layer = 8; 
-             floor.transform.position = new Vector3(0f,0.2f,-10f);
-             var boxC = floor.AddComponent<BoxCollider2D>();
-             boxC.size = new Vector2(100f,1f);
-             
-             var dummy = new GameObject();
-             dummy.transform.position = new Vector3(14.6f, 2.7f, -18.1f);
-             dummy.GetAddComponent<MouseFollow>();
-             var a = createGrubCompanion(dummy);
-             if(a != null){
-                var b = createGrubCompanion(a);
-                if(b != null){
-                    createGrubCompanion(b);
-                }
-             }
-             PrintAllActiveGameObjectsInScene();
-             orig(self, index);
+            var floor = new GameObject();
+            floor.layer = 8; 
+            floor.transform.position = new Vector3(0f,0.2f,-10f);
+            var boxC = floor.AddComponent<BoxCollider2D>();
+            boxC.size = new Vector2(100f,1f);
+            
+            MenuGos.ForEach(g => GameObject.Destroy(g));
+            MenuGos = new List<GameObject>();
+
+            var dummy = new GameObject();
+            dummy.transform.position = new Vector3(14.6f, 2.7f, -18.1f);
+            dummy.GetAddComponent<MouseFollow>();
+            MenuGos.Add(dummy);
+            MenuGos.Add(createGrubCompanion(dummy));
+            for(var i = 2; i < 4 ; i++){
+                MenuGos.Add(createGrubCompanion(MenuGos[i-1]));
+            }
+
+            orig(self, index);
         }
         public override string GetVersion()
         {
