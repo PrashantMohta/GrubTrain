@@ -28,6 +28,7 @@ namespace GrubTrain
         
         public GrubTrain(){
             On.MenuStyleTitle.SetTitle += MenuScreenGrubs;
+            UnityEngine.SceneManagement.SceneManager.activeSceneChanged += OnSceneChanged;
         }
 
         private void MenuScreenGrubs(On.MenuStyleTitle.orig_SetTitle orig, MenuStyleTitle self, int index){
@@ -153,6 +154,10 @@ namespace GrubTrain
                 GameObject.Destroy(grub);
             }
             grubs = new List<GameObject>();
+            foreach(var grub in MenuGos){
+                GameObject.Destroy(grub);
+            }
+            MenuGos = new List<GameObject>();
         }
 
         public IEnumerator updateGrubCount(){
@@ -163,8 +168,16 @@ namespace GrubTrain
                 if(settings.grubGathererMode){
                     // for each freed grub add more grubs
                     var rescuedGrubs = PlayerData.instance.GetInt(nameof(PlayerData.grubsCollected));
-                    neededGrubCount += rescuedGrubs;
+                    neededGrubCount += (rescuedGrubs - settings.returnedCount);
                 }
+            }
+        }
+        
+        public void OnSceneChanged(Scene from, Scene to){
+            if(to.name == "Crossroads_38"){            
+                settings.returnedCount = PlayerData.instance.GetInt(nameof(PlayerData.grubsCollected));
+                neededGrubCount = settings.grubBaseCount;
+                destroyTrain();                        
             }
         }
         public IEnumerator RefreshMenuOptions(){
