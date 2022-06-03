@@ -105,8 +105,8 @@ namespace GrubTrain
             UnityEngine.Object.DontDestroyOnLoad(grubPrefab);
             ModHooks.HeroUpdateHook += update;
             ModHooks.AfterSavegameLoadHook += LoadSaveGame;
-            GameManager.instance.StartCoroutine(updateGrubCount());
-            GameManager.instance.StartCoroutine(RefreshMenuOptions());
+            CoroutineHelper.GetRunner().StartCoroutine(updateGrubCount());
+            CoroutineHelper.GetRunner().StartCoroutine(RefreshMenuOptions());
         }
        
         public override List<(string, string)> GetPreloadNames()
