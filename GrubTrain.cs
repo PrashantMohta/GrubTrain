@@ -19,7 +19,7 @@ using static Satchel.TextureUtils;
 
 namespace GrubTrain
 {
-    public class GrubTrain : Mod , ICustomMenuMod,IGlobalSettings<ModSettings>
+    public class GrubTrain : Mod , ICustomMenuMod,IGlobalSettings<ModSettings>,ILocalSettings<SaveSettings>
     {
 
         public static GrubTrain Instance;
@@ -65,6 +65,10 @@ namespace GrubTrain
             Menu.refreshMenuOptions();
         }
         public ModSettings OnSaveGlobal() => settings;
+
+        public static SaveSettings saveSettings { get; set; } = new SaveSettings();
+        public void OnLoadLocal(SaveSettings s) => saveSettings = s;
+        public SaveSettings OnSaveLocal() => saveSettings;
         public bool ToggleButtonInsideMenu => false;
 
         public int neededGrubCount = 0;
@@ -127,7 +131,7 @@ namespace GrubTrain
                 grub = createGrubCompanion();
             } else {
                 var followTarget = grubs[grubs.Count-1];
-                if(settings.grubGathererMode && UnityEngine.Random.Range(0.0f, 1.0f) < 0.5f && grubs.Count > 4){
+                if(saveSettings.grubGathererMode && UnityEngine.Random.Range(0.0f, 1.0f) < 0.5f && grubs.Count > 4){
                     followTarget = grubs[3];    
                     if(UnityEngine.Random.Range(0.0f, 1.0f) < 0.1f){
                         followTarget = grubs[2];
@@ -166,17 +170,17 @@ namespace GrubTrain
                 yield return new WaitWhile(()=> PlayerData.instance == null );
                 yield return new WaitForSeconds(2f);
                 neededGrubCount = settings.grubBaseCount;
-                if(settings.grubGathererMode){
+                if(saveSettings.grubGathererMode){
                     // for each freed grub add more grubs
                     var rescuedGrubs = PlayerData.instance.GetInt(nameof(PlayerData.grubsCollected));
-                    neededGrubCount += (rescuedGrubs - settings.returnedCount);
+                    neededGrubCount += (rescuedGrubs - saveSettings.returnedCount);
                 }
             }
         }
         
         public void OnSceneChanged(Scene from, Scene to){
             if(to.name == "Crossroads_38"){            
-                settings.returnedCount = PlayerData.instance.GetInt(nameof(PlayerData.grubsCollected));
+                saveSettings.returnedCount = PlayerData.instance.GetInt(nameof(PlayerData.grubsCollected));
                 neededGrubCount = settings.grubBaseCount;
                 destroyTrain();                        
             }

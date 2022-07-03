@@ -104,8 +104,8 @@ namespace GrubTrain
                     new HorizontalOptionConfig
                     {
                         Options = new string[] { "Enabled" , "Disabled"},
-                        ApplySetting = (_, i) => GrubTrain.settings.grubGathererMode = (i == 0),
-                        RefreshSetting = (s, _) => s.optionList.SetOptionTo(GrubTrain.settings.grubGathererMode ? 0 : 1),
+                        ApplySetting = (_, i) => GrubTrain.saveSettings.grubGathererMode = (i == 0),
+                        RefreshSetting = (s, _) => s.optionList.SetOptionTo(GrubTrain.saveSettings.grubGathererMode ? 0 : 1),
                         CancelAction = _ => { BackSetting(); },
                         Description = new DescriptionInfo
                         {
